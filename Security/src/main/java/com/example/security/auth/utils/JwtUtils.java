@@ -94,7 +94,7 @@ public class JwtUtils {
         try {
             Jwts.parser().setSigningKey(this.key).parseClaimsJws(authToken);
             return true;
-        } catch (MalformedJwtException e) {
+        } catch (MalformedJwtException | SignatureException e) {
             LOGGER.info("Invalid JWT signature.");
             LOGGER.trace("Invalid JWT signature trace: {}", e);
         } catch (ExpiredJwtException e) {

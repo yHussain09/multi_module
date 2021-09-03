@@ -35,9 +35,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
         UsernamePasswordAuthenticationToken authentication = jwtUtils.getAuthentication(token);
-        LOGGER.info("Get Authentication from JWT.");
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        LOGGER.info("Set Authentication in Spring Security Context.");
+        if(authentication != null) {
+            LOGGER.info("Get Authentication from JWT.");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            LOGGER.info("Set Authentication in Spring Security Context.");
+        }
         filterChain.doFilter(request,response);
     }
 }
