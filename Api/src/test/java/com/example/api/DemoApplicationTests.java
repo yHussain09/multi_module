@@ -3,11 +3,29 @@ package com.example.api;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
+//@SpringBootTest
 class DemoApplicationTests {
 
+	Calculator underTest = new Calculator();
+
 	@Test
-	void contextLoads() {
+	void addTwoNumbers() {
+		// given
+		int numbweOne = 20;
+		int numbweTwo = 30;
+
+		// when
+		int result = underTest.add(numbweOne, numbweTwo);
+
+		// then
+		int expected = 50;
+		assertThat(result).isEqualTo(expected);
+
 	}
 
+	class Calculator {
+		public int add(int a, int b) {return a + b;}
+	}
 }

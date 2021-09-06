@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 @PreAuthorize("hasRole('ROLE_USER')")
@@ -42,11 +43,12 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
         return service.save (entity);
     }
 
-    /*@PostMapping("/")
-    public List<T> saveAll(@RequestBody final List<T> entities) {
+    @PostMapping("/saveAll")
+    @PreAuthorize("hasPermission(null, 'CREATE')")
+    public  ResponseEntity<List<T>> saveAll(@RequestBody final List<T> entities) {
         LOGGER.info (String.format ("RestControllerBase --> save {0}", entities.get(0).toString ()));
         return service.saveAll (entities);
-    }*/
+    }
 
     @PutMapping("/")
     @PreAuthorize("hasPermission(null, 'UPDATE')")
