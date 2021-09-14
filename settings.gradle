@@ -1,4 +1,5 @@
 rootProject.name = 'demo'
+include 'CoreJava'
 include 'Security'
-include 'Api'
+include 'Application'
 

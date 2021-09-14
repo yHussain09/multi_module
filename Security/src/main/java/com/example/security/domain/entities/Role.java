@@ -1,6 +1,6 @@
 package com.example.security.domain.entities;
 
-import com.example.security.base.EntityBase;
+import com.example.corejava.domain.entities.EntityBase;
 
 import javax.persistence.*;
 import java.util.HashSet;

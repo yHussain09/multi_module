@@ -1,6 +1,6 @@
 package com.example.security.domain.dao;
 
-import com.example.security.base.RepositoryBase;
+import com.example.corejava.domain.dao.RepositoryBase;
 import com.example.security.domain.entities.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Repository;

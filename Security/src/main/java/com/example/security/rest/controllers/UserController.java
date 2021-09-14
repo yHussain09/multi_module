@@ -1,6 +1,6 @@
 package com.example.security.rest.controllers;
 
-import com.example.security.base.RestControllerBase;
+import com.example.corejava.rest.controllers.RestControllerBase;
 import com.example.security.domain.entities.User;
 import com.example.security.domain.services.UserService;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.example.security.domain.services;
 
-import com.example.security.base.ServiceBase;
+import com.example.corejava.domain.services.ServiceBase;
 import com.example.security.domain.dao.UserRoleRepository;
 import com.example.security.domain.entities.UserRole;
 import com.example.security.domain.entities.pks.UserRolePK;

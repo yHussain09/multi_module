@@ -1,7 +1,7 @@
 package com.example.security.domain.services;
 
 import com.example.security.auth.utils.JwtUtils;
-import com.example.security.base.ServiceBase;
+import com.example.corejava.domain.services.ServiceBase;
 import com.example.security.domain.dao.UserRepository;
 import com.example.security.domain.entities.User;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;

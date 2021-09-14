@@ -1,6 +1,6 @@
 package com.example.security.rest.controllers;
 
-import com.example.security.base.RestControllerBase;
+import com.example.corejava.rest.controllers.RestControllerBase;
 import com.example.security.domain.entities.UserRole;
 //import com.example.demo.domain.services.UserAuthorityService;
 import com.example.security.domain.entities.pks.UserRolePK;

@@ -1,6 +1,6 @@
 package com.example.security.domain.entities;
 
-import com.example.security.base.EntityBase;
+import com.example.corejava.domain.entities.EntityBase;
 import com.example.security.domain.entities.pks.RolePermissionPK;
 
 import javax.persistence.*;

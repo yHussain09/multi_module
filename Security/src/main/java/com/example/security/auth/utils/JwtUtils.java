@@ -1,5 +1,6 @@
 package com.example.security.auth.utils;
 
+import com.example.security.auth.exceptions.JwtTokenMissingException;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,12 +137,14 @@ public class JwtUtils {
 
     public String getTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader(this.tokenHeader);
+        LOGGER.info("Get token from Request.");
         if(token != null && token.startsWith(this.tokenPrefix)) {
             token = token.replace(this.tokenPrefix + " ", "");
             LOGGER.debug("Get token: {} from Request: {}", token, request.getRequestURI());
             return token;
         } else {
 //            throw new JwtTokenMissingException("JWT not found in request header.");
+            LOGGER.info("JWT not found in request header.");
             return null;
         }
     }
