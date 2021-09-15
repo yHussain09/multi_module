@@ -1,6 +1,5 @@
 package com.example.security.auth.utils;
 
-import com.example.security.auth.exceptions.JwtTokenMissingException;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

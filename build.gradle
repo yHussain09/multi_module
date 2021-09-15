@@ -1,0 +1,49 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+/**
+ * Add Springboot plugin into build script classpath (without applying it)
+ * This is this only place where you need to define the Springboot version.
+ *
+ * See https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/#managing-dependencies-using-in-isolation
+ */
+plugins {
+    id "org.springframework.boot" version "2.5.2" apply false
+}
+
+// Set version for dependencies share between subprojects
+//ext {
+//    commonsIoVersion = "2.6"
+//}
+
+allprojects {
+    group = "com.example"
+    version '0.0.1-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'java-library'
+}
+
+subprojects {
+    // common config for all Java subprojects
+//    apply plugin: "java"
+//    apply plugin: "idea"
+
+    sourceCompatibility = 1.8
+    repositories {
+        mavenCentral()
+    }
+
+    // apply Spring Boot's dependency management plugin
+    apply plugin: "io.spring.dependency-management"
+
+    dependencyManagement {
+        imports {
+            mavenBom SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
+    dependencies {
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
