@@ -4,8 +4,7 @@ package com.example.security.auth.filters;
 import com.example.security.rest.dto.UserLoginDto;
 import com.example.security.auth.utils.JwtUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,16 +20,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
-//@Component
-public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationFilter.class);
+//@Component
+@Slf4j
+public class RestApiAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-
-    public AuthenticationFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public RestApiAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         setFilterProcessesUrl(jwtUtils.getAuthEndpoint());
@@ -44,38 +44,38 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-
         UserLoginDto userLoginDto;
         try {
             userLoginDto = new ObjectMapper().readValue(request.getInputStream(), UserLoginDto.class);
-
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(),
                             userLoginDto.getPassword(),
                             new ArrayList<>());
-
-            LOGGER.info("Attempt Authentication for User '{}'.",userLoginDto.getUsername());
+            log.info("Attempt Authentication for User '{}'.",userLoginDto.getUsername());
             return authenticationManager.authenticate(authenticationToken);
         }
         catch(IOException | AuthenticationException e) {
-            LOGGER.error("Authentication Failed!: '{}'.",e.getLocalizedMessage());
+            log.error("Authentication Failed!: '{}'.",e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-
-        LOGGER.info("Authentication Successful! for User '{}'.",((User)authentication.getPrincipal()).getUsername());
+        log.info("Authentication Successful! for User '{}'.",((User)authentication.getPrincipal()).getUsername());
 //        response.addHeader("Authorization","Bearer " + token);
-        response.addHeader(jwtUtils.getTokenHeader(), jwtUtils.getTokenPrefix() + " " + jwtUtils.generateToken(authentication));
-//        String body = ((User) authentication.getPrincipal()).getUsername() + " " + generateToken(authentication);
-//        response.getWriter().write(body);
-//        response.getWriter().flush();
-
+        response.addHeader(AUTHORIZATION, jwtUtils.getTokenPrefix() + " " + jwtUtils.getAccessToken(request, authentication));
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("access_token", jwtUtils.getAccessToken(request, authentication));
+        responseMap.put("token_type", "Bearer");
+        responseMap.put("expires_in", jwtUtils.getAccessTokenExpirationTime());
+        responseMap.put("refresh_token", jwtUtils.getRefreshToken(request, authentication));
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), responseMap);
     }
 
-
-
-
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+    }
 }
