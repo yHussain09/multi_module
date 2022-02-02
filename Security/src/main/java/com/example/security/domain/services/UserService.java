@@ -4,9 +4,12 @@ import com.example.security.auth.utils.JwtUtils;
 import com.example.corejava.domain.services.ServiceBase;
 import com.example.security.domain.dao.UserRepository;
 import com.example.security.domain.entities.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,17 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Locale;
 import java.util.Optional;
 
+//@RequiredArgsConstructor
 @Service
 @Transactional
+@Slf4j
+//@ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
 public class UserService extends ServiceBase<User,Long> implements UserDetailsService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+//    private final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-
 
     public UserService(UserRepository repository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
         super(repository);
@@ -39,14 +43,14 @@ public class UserService extends ServiceBase<User,Long> implements UserDetailsSe
 
     @Transactional
     @Override
-    public ResponseEntity<User> save(User entity) {
+    public User save(User entity) {
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         return super.save(entity);
     }
 
     @Transactional
     @Override
-    public ResponseEntity<User> update(User entity) {
+    public User update(User entity) {
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         return super.update(entity);
     }
@@ -60,7 +64,7 @@ public class UserService extends ServiceBase<User,Long> implements UserDetailsSe
     @Transactional
     public UserDetails loadUserByUsername(final String username) {
 
-        LOGGER.debug("Authenticating user '{}'", username);
+        log.debug("Authenticating user '{}'", username);
 
         if (new EmailValidator().isValid(username, null)) {
             return userRepository.findOneWithRolesByEmailIgnoreCase(username)
