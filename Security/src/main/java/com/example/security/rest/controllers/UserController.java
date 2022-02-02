@@ -19,7 +19,7 @@ public class UserController extends RestControllerBase<User, Long> {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> saveUser (User user){
+    public User saveUser (User user){
         return this.userService.save(user);
     }
 
