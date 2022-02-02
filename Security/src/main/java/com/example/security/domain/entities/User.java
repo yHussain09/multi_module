@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
@@ -21,9 +22,11 @@ public class User extends EntityBase implements UserDetails, Serializable {
     private Long id;
 
     @Column(name = "username" , length = 50, nullable = false, unique = true)
+    @NotEmpty(message = "Username cannot be empty or null!")
     private String username;
 
     @Column(name = "password", nullable = false)
+    @NotEmpty(message = "Password cannot be empty or null!")
     private String password;
 
     @Column(name = "first_name", length = 50)
@@ -81,6 +84,7 @@ public class User extends EntityBase implements UserDetails, Serializable {
         this.username = username;
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
@@ -185,11 +189,13 @@ public class User extends EntityBase implements UserDetails, Serializable {
         this.credentialsNonExpired = credentialsNonExpired;
     }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role: this.roles) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+//            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+            authorities.add(new SimpleGrantedAuthority(role.getRole()));
             role.getPermissions().stream()
                     .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
                     .forEach(authorities::add);
