@@ -2,4 +2,6 @@ rootProject.name = 'demo'
 include 'CoreJava'
 include 'Security'
 include 'Application'
+include 'EQueue'
+include 'Inventory'
 
