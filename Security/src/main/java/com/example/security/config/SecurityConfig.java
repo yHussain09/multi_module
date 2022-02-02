@@ -1,16 +1,12 @@
 package com.example.security.config;
 
-import com.example.security.auth.filters.AuthenticationFilter;
-//import com.example.demo.auth.JwtAuthenticationEntryPoint;
-//import com.example.demo.auth.CustomAccessDecisionVoter;
-//import com.example.demo.auth.CustomPermissionEvaluator;
-import com.example.security.auth.filters.JwtRequestFilter;
+import com.example.security.auth.filters.RestApiAuthenticationFilter;
 import com.example.security.auth.utils.JwtUtils;
 import com.example.security.domain.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,297 +15,199 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
-@Configuration
+import java.util.Arrays;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
+
+/**
+ * -> Implementation-type 1. Rest APIs should only accessed if auth token is present and valid.
+ *
+ *    => Limitation of this implementation type is, if web application wants to make AJAX calls to Rest API even though browser has valid session it won't allow to access Web-APIs.
+ *    => Here Rest API is only for stateless access.
+ *
+ *    Description:
+ *    -> It has multiple http security configuration(two http security configuration)
+ *    -> where http configuration of @order(1) will authorize only "/api/**" rest of url's will not be considered by this configuration. This http configuration will be configured for stateless. And you should configure an implementation of OncePerRequestFilter(Say JwtAuthFilter) and filter order can be before UsernamePasswordAuthenticationFilter or BasicAuthenticationFilter. But your filter should read the header for auth token, validate it and should create Authentication object and set it to SecurityContext without fail.
+ *    -> And http configuration of @order(2) will authorize if request is not qualified for first order http configuration. And this configuration does not configures JwtAuthFilter but configures UsernamePasswordAuthenticationFilter(.formLogin() does this for you)
+ */
+
+
+/*@Configuration
 @EnableWebSecurity
-//@EnableAspectJAutoProxy
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+//@ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
+public class SecurityConfig {
 
-//    private final TokenProvider tokenProvider;
-//    private final CorsFilter corsFilter;
-//    private final JwtAuthenticationEntryPoint authenticationErrorHandler;
 
+
+    *//*private static CorsFilter getCorsFilter() {
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:4200"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
+                "Accept", "Jwt-Token", "Authorization", "Origin, Accept", "X-Requested-With"
+                , "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
+                "Jwt-Token", "Authorization", "Access-Control-Allow-Credentials", "Filename"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(urlBasedCorsConfigurationSource);
+    }*//*
+
+    *//*@Order(1)
+    @Configuration
+//    @ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
+    public static class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+
+        *//**//*@Bean
+        CorsConfigurationSource corsConfigurationSource() {
+            final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+            source.registerCorsConfiguration("/**", corsConfiguration);
+            return source;
+        }*//**//*
+
+        *//**//*@Bean
+        public CorsFilter crosFilter() {
+            return getCorsFilter();
+        }*//**//*
+
+
+    }*//*
+
+    *//*@Order(2)
+    @Configuration
+//    @ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
+    public static class WebAppLoginFormSecurityConfig extends WebSecurityConfigurerAdapter {
+
+        *//**//*@Autowired
+        UserService userService;
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        }*//**//*
+
+        *//**//*@Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
+//            http.cors().and().csrf().disable();
+            http.authorizeRequests().antMatchers("/**").permitAll();
+            *//**//**//**//*
+            // we don't need CSRF because our token is invulnerable
+            http.cors().and().csrf().disable();
+
+            // ignore GET and POST requests for /login url from spring security.
+            http
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.GET,"/login").permitAll()
+                    .antMatchers(HttpMethod.POST,"/login").permitAll()
+                    .and()
+                    // authorize all requests.
+                    .authorizeRequests()
+                    .anyRequest()
+                    .authenticated()
+                    .and()
+
+                    // custom login form.
+                    .formLogin()
+                    .loginPage("/login")
+//                .loginProcessingUrl("")
+                    .defaultSuccessUrl("/")
+                    .failureUrl("/login?error=true")
+                    .and()
+
+                    // setting logout url.
+                    .logout()
+//                .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
+                    .and()
+
+                    // session management.
+                    .sessionManagement().maximumSessions(1).expiredUrl("/login?expired=true");*//**//**//**//*
+        }*//**//*
+
+        *//**//*@Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                    .ignoring()
+                    .antMatchers("/resources/**",
+                            "/static/**",
+                            "/css/**",
+                            "/js/**",
+                            "/img/**",
+                            "/scss/**",
+                            "/vendor/**",
+                            "/icon/**");
+        }*//**//*
+
+        *//**//*@Bean
+        public CorsFilter crosFilter() {
+            return getCorsFilter();
+        }*//**//*
+    }*//*
+}*/
+
+/**
+ * -> Implementation-type 2. Rest APIs can be accessed by auth token as well as session.
+ *
+ *    => Here Rest API's can be accessed by any third party applications(cross-origin) by auth token.
+ *    => Here Rest API's can be accessed in web application(same-origin) through AJAX calls.
+ *
+ *    Description:
+ *    -> It has only one http security configuration.
+ *    -> where http configuration will authorize all "/**"
+ *    -> Here this http configuration is configured for both UsernamePasswordAuthenticationFilter and JwtAuthFilter but JwtAuthFilter should be configured before UsernamePasswordAuthenticationFilter.
+ *    -> Trick used here is if there is no Authorization header filter chain just continues to UsernamePasswordAuthenticationFilter and attemptAuthentication method of UsernamePasswordAuthenticationFilter will get invoked if there is no valid auth object in SecurityContext. If JwtAuthFilter validates token and sets auth object to SecurityContext then even if filter chain reaches UsernamePasswordAuthenticationFilter attemptAuthentication method will not be invoked as there is already an authentication object set in SecurityContext.
+ */
+
+/*@Configuration
+@EnableWebSecurity
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtauthFilter;
 
     @Autowired
-    UserService userService;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    JwtUtils jwtUtils;
+    public void configureInMemoryAuthentication(AuthenticationManagerBuilder auth) throws Exception
+    {
+        auth.inMemoryAuthentication().withUser("admin").password(passwordEncoder.encode("admin@123#")).roles("ADMIN");
+    }
 
-    /*@Bean
-    public JwtUtils jwtUtils() {
-        return new JwtUtils();
-    };*/
+    @Override
+    protected void configure(HttpSecurity http) throws Exception
+    {
+        http
+                .csrf().disable()
+                .antMatcher("/**").authorizeRequests()
+                .antMatchers("/resources/**").permitAll()
+                .antMatchers("/api/authenticate").permitAll()
+                .antMatchers("/api/**").hasAnyRole("APIUSER","ADMIN")
+                .antMatchers("/**").hasRole("ADMIN")
+                .and()
+                .formLogin()
+                .and()
+                .addFilterBefore(jwtauthFilter, UsernamePasswordAuthenticationFilter.class);
 
-
-//    private final CustomPermissionEvaluator permissionEvaluator;
-
-//    @Autowired
-//    AuthenticationFilter authenticationFilter;
-
-//    @Autowired
-//    AuthorizationFilter authorizationFilter;
-
-    /*public SecurityConfig(CustomPermissionEvaluator permissionEvaluator) {
-        this.permissionEvaluator = permissionEvaluator;
-    }*/
-//    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-
-
-    /*public SecurityConfig(TokenProvider tokenProvider, CorsFilter corsFilter, JwtAuthenticationEntryPoint authenticationErrorHandler, JwtAccessDeniedHandler jwtAccessDeniedHandler, JwtAccessDeniedHandler jwtAccessDeniedHandler1) {
-        this.tokenProvider = tokenProvider;
-        this.corsFilter = corsFilter;
-        this.authenticationErrorHandler = authenticationErrorHandler;
-        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler1;
-    }*/
-
-
-
-
-
-    // Configure BCrypt password encoder =====================================================================
+        http.sessionManagement().maximumSessions(1).expiredUrl("/login?expired=true");
+    }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder()
+    {
         return new BCryptPasswordEncoder();
     }
-
-//    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    /*@Bean
-    public AccessDecisionManager accessDecisionManager() {
-        List<AccessDecisionVoter<? extends Object>> decisionVoters
-                = Arrays.asList(
-                new WebExpressionVoter(),
-                new RoleVoter(),
-                new AuthenticatedVoter(),
-                new CustomAccessDecisionVoter());
-        return new UnanimousBased(decisionVoters);
-    }*/
-
-    /*@Bean
-    public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
-        DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
-        handler.setPermissionEvaluator(permissionEvaluator);
-        return handler;
-    }*/
-
-
-   /* @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
-        return new CustomAccessDeniedHandler();
-    }*/
-
-
-    // Configure paths and requests that should be ignored by Spring Security ================================
-
-
-
-
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-
-//        http.authenticationProvider(authenticationProvider());
-
-        // we don't need CSRF because our token is invulnerable
-        http.cors().and().csrf().disable();
-
-        // bypass all endpoints
-//        http .authorizeRequests().antMatchers("/**").permitAll();
-
-        // dont authenticate this particular request
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/api/user/register","/api/user/authenticate").permitAll();
-
-        // all endpoints are secured.
-        http.authorizeRequests().antMatchers("/api/**").authenticated();
-
-//        http.authorizeRequests().accessDecisionManager(accessDecisionManager());
-
-//        http.addFilter(new AuthenticationFilter(authenticationManager()));
-//        http.addFilter(new AuthorizationFilter(authenticationManager()));
-
-        // exception handling
-//        http.exceptionHandling().authenticationEntryPoint(authenticationErrorHandler);
-
-        // create no session
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(new AuthenticationFilter(authenticationManager(),jwtUtils), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(new JwtRequestFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
-
-
-
-
-//                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
-
-//                .exceptionHandling()
-//                .authenticationEntryPoint(authenticationErrorHandler)
-//                .accessDeniedHandler(jwtAccessDeniedHandler)
-
-                // enable h2-console
-//                .and()
-//                .headers()
-//                .frameOptions()
-//                .sameOrigin()
-
-                // create no session
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/api/authenticate").permitAll()
-                // .antMatchers("/api/register").permitAll()
-                // .antMatchers("/api/activate").permitAll()
-                // .antMatchers("/api/account/reset-password/init").permitAll()
-                // .antMatchers("/api/account/reset-password/finish").permitAll()
-
-//                .antMatchers(HttpMethod.PUT,"/api/user").hasAuthority("ROLE_USER")
-//                .antMatchers("/api/hiddenmessage").hasAuthority("ROLE_ADMIN")
-
-//                .anyRequest().authenticated()
-
-//                .and()
-//                .apply(securityConfigurerAdapter());
-
-
-
-
-
-
-
-
-        // Enable CORS and disable CSRF
-//        http = http.cors().and().csrf().disable();
-
-        // Set session management to stateless
-//        http = http
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and();
-
-        // Set unauthorized requests exception handler
-//        http = http
-//                .exceptionHandling()
-//                .authenticationEntryPoint(
-//                        (request, response, ex) -> {
-//                            response.sendError(
-//                                    HttpServletResponse.SC_UNAUTHORIZED,
-//                                    ex.getMessage()
-//                            );
-//                        }
-//                )
-//                .and();
-
-        // Set permissions on endpoints
-//        http.authorizeRequests()
-                // Our public endpoints
-//                .antMatchers("/api/public/**").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
-//                .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
-//                .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
-//                .antMatchers("/").permitAll()
-                // Our private endpoints
-//                .anyRequest().authenticated();
-
-//        http
-//                .httpBasic()
-//                .and()
-
-//                .authorizeRequests().antMatchers("/").permitAll()
-//                .and()
-//                .authorizeRequests().anyRequest().authenticated()
-//                .antMatchers("/api/**").permitAll()
-//                .hasRole("USER")
-//                .antMatchers("/**").permitAll()
-//                .anyRequest().authenticated()
-//                .antMatchers("/").permitAll()
-//                .and().addFilter(authenticationFilter())
-//                .and()
-//                .formLogin()
-//                    .loginPage("/login")
-//                    .failureUrl("/login?error=true")
-//                .and().addFilter(new AuthenticationFilter(authenticationManager()))
-//                .addFilter(new AuthorizationFilter(authenticationManager()))
-//                .and().cors().and().csrf().disable();
-
-        /*http.cors().and().csrf().disable();
-                http.antMatcher("/api/**").authorizeRequests()
-                    .anyRequest().authenticated()
-                .and()
-                    .exceptionHandling()
-                    .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-                    .accessDeniedHandler(new CustomAccessDeniedHandler())
-                .and()
-                .addFilterBefore(new AuthenticationFilter(authenticationManager()))
-                .addFilter(new AuthorizationFilter(authenticationManager()))
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);*/
-
-
-    }
-
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring()
-                .antMatchers(HttpMethod.OPTIONS, "/**");
-//                .antMatchers(HttpMethod.POST, "/api/user/register")
-//                .antMatchers(HttpMethod.POST, "/api/user/authenticate");
-
-                // allow anonymous resource requests
-//                .antMatchers(
-//                        "/",
-//                        "/*.html",
-//                        "/favicon.ico",
-//                        "/**/*.html",
-//                        "/**/*.css",
-//                        "/**/*.js"
-//                );
-    }
-
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
-    }
-
-//    private JWTConfigurer securityConfigurerAdapter() {
-//        return new JWTConfigurer(tokenProvider);
-//    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
-    }
-
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        return source;
-    }
-
-}
+}*/
