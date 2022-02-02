@@ -1,7 +1,6 @@
 package com.example.security.auth.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -10,20 +9,19 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @Component
 public class JwtPermissionEvaluator implements PermissionEvaluator {
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger (JwtPermissionEvaluator.class);
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (authentication != null && permission instanceof String) {
-            LOGGER.debug("Validating Access Permission for User '{}' and Permission '{}'.",authentication.getPrincipal().toString(), permission);
+            log.debug("Validating Access Permission for User '{}' and Permission '{}'.",authentication.getPrincipal().toString(), permission);
             boolean permissionValidate = validatePermission(authentication ,String.valueOf(permission));
             if (permissionValidate) {
-                LOGGER.debug("Permission '{}' Granted for User '{}'",permission, authentication.getPrincipal().toString());
+                log.debug("Permission '{}' Granted for User '{}'",permission, authentication.getPrincipal().toString());
             } else {
-                LOGGER.debug("Failed to validate Permission '{}' for User '{}'",permission, authentication.getPrincipal().toString());
+                log.debug("Failed to validate Permission '{}' for User '{}'",permission, authentication.getPrincipal().toString());
             }
             return permissionValidate;
         }
