@@ -17,49 +17,57 @@
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
                             </div>
-                            <form method="POST" class="user" th:object="${userForm}" th:action="@{/app/user/register}">
+                            <form method="POST" class="user" th:object="${User}" th:action="@{/app/user/register}">
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <input type="text" class="form-control form-control-user" id="exampleFirstName"
-                                            placeholder="First Name">
+                                        <input type="text" class="form-control form-control-user" id="username" placeholder="Username" th:field="*{username}">
+                                    </div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="password" class="form-control form-control-user"
+                                               id="password" placeholder="Password" th:field="*{password}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input type="text" class="form-control form-control-user" id="first_name" placeholder="First Name" th:field="*{firstName}">
                                     </div>
                                     <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-user" id="exampleLastName"
-                                            placeholder="Last Name">
+                                        <input type="text" class="form-control form-control-user" id="last_name"
+                                               placeholder="Last Name" th:field="*{lastName}">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" class="form-control form-control-user" id="exampleInputEmail"
-                                        placeholder="Email Address">
+                                    <input type="email" class="form-control form-control-user" id="email"
+                                        placeholder="Email Address" th:field="*{email}">
                                 </div>
-                                <div class="form-group row">
-                                    <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <input type="password" class="form-control form-control-user"
-                                            id="exampleInputPassword" placeholder="Password">
-                                    </div>
+                                <div class="form-group">
+                                    <input type="tel" class="form-control form-control-user" id="phonenumber"
+                                           placeholder="Mobile Number" th:field="*{phoneNumber}">
+                                </div>
+                                <!--<div class="form-group row">
                                     <div class="col-sm-6">
                                         <input type="password" class="form-control form-control-user"
-                                            id="exampleRepeatPassword" placeholder="Repeat Password">
+                                            id="password" placeholder="Repeat Password" th:field="*{password}">
                                     </div>
-                                </div>
+                                </div>-->
 <!--                                <a href="login.html" class="btn btn-primary btn-user btn-block">-->
 <!--                                    Register Account-->
 <!--                                </a>-->
                                 <button class="btn btn-primary btn-user btn-block" type="submit">Submit</button>
                                 <hr>
-                                <a href="index.html" class="btn btn-google btn-user btn-block">
+                                <!--<a href="index.html" class="btn btn-google btn-user btn-block">
                                     <i class="fab fa-google fa-fw"></i> Register with Google
                                 </a>
                                 <a href="index.html" class="btn btn-facebook btn-user btn-block">
                                     <i class="fab fa-facebook-f fa-fw"></i> Register with Facebook
                                 </a>
-                            </form>
+                            </form>-->
                             <hr>
                             <div class="text-center">
                                 <a class="small" href="forgot-password.html">Forgot Password?</a>
                             </div>
                             <div class="text-center">
-                                <a class="small" href="login.html">Already have an account? Login!</a>
+                                <a class="small" href="login">Already have an account? Login!</a>
                             </div>
                         </div>
                     </div>

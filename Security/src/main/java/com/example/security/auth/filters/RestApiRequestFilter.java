@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -49,9 +50,14 @@ public class RestApiRequestFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = jwtUtils.getAuthentication(token);
                 if (authentication != null) {
 //                    log.info("Get Authentication from JWT.");
+//                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     log.info("Set Authentication in Spring Security Context.");
+
+                }
+                else {
                     filterChain.doFilter(request, response);
+                    return;
                 }
             } catch (JwtTokenMissingException e) {
                 log.error(e.getMessage());
@@ -75,6 +81,5 @@ public class RestApiRequestFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-        return;
     }
 }

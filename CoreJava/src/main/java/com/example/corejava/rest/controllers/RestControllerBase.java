@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 public abstract class RestControllerBase<T, ID extends Serializable> {
 
     protected final ServiceBase<T, ID> service;
@@ -26,7 +26,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasPermission(null, 'READ')")
+//    @PreAuthorize("hasPermission(null, 'READ')")
     public ResponseEntity<RestResponse> getAll(final Pageable pageable, final T entity) {
         Map<String, Object> map = new HashMap<>();
         map.put(entity.getClass().getSimpleName(), this.service.getAll(pageable, entity));
@@ -44,7 +44,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasPermission(null, 'READ')")
+//    @PreAuthorize("hasPermission(null, 'READ')")
     public ResponseEntity<RestResponse> getById(@PathVariable final ID id) {
         Map<String, Object> map = new HashMap<>();
         map.put(this.service.getClass().getSimpleName(), this.service.getById(id));
@@ -60,7 +60,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasPermission(null, 'CREATE')")
+//    @PreAuthorize("hasPermission(null, 'CREATE')")
     public ResponseEntity<RestResponse> save(@RequestBody final T entity) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/student/").toUriString());
         Map<String, Object> map = new HashMap<>();
@@ -77,7 +77,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @PostMapping("/saveAll")
-    @PreAuthorize("hasPermission(null, 'CREATE')")
+//    @PreAuthorize("hasPermission(null, 'CREATE')")
     public ResponseEntity<RestResponse> saveAll(@RequestBody final List<T> entities) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/student/saveAll").toUriString());
         Map<String, Object> map = new HashMap<>();
@@ -94,7 +94,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @PutMapping("/")
-    @PreAuthorize("hasPermission(null, 'UPDATE')")
+//    @PreAuthorize("hasPermission(null, 'UPDATE')")
     public ResponseEntity<RestResponse> update(@RequestBody final T entity) {
         Map<String, Object> map = new HashMap<>();
         map.put(entity.getClass().getSimpleName(), this.service.update(entity));
@@ -110,7 +110,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @DeleteMapping("/")
-    @PreAuthorize("hasPermission(null, 'DELETE')")
+//    @PreAuthorize("hasPermission(null, 'DELETE')")
     public ResponseEntity<RestResponse> delete(@RequestBody final T entity) {
         service.delete(entity);
         return ResponseEntity.accepted().body(
@@ -124,7 +124,7 @@ public abstract class RestControllerBase<T, ID extends Serializable> {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasPermission(null, 'DELETE')")
+//    @PreAuthorize("hasPermission(null, 'DELETE')")
     public ResponseEntity<RestResponse> delete(@PathVariable final ID id) {
         service.deleteById(id);
         return ResponseEntity.accepted().body(

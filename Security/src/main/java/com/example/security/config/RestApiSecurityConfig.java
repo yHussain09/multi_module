@@ -8,6 +8,7 @@ import com.example.security.domain.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -64,9 +66,9 @@ public class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(STATELESS);
 //            http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 //            http.authorizeRequests().anyRequest().permitAll();
-//        http.authorizeRequests().antMatchers("/api/login/**").permitAll();
+//        http.authorizeRequests().antMatchers("/app/**/**").permitAll();
 //        http.exceptionHandling().authenticationEntryPoint(new RestApiAuthenticationEntryPoint());
-        http.authorizeRequests().anyRequest().authenticated();
+        http.antMatcher("/api/**").authorizeRequests().anyRequest().authenticated();
         http.addFilter(new RestApiAuthenticationFilter(authenticationManager(), jwtUtils));
         http.addFilterBefore(new RestApiRequestFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
 
@@ -110,7 +112,9 @@ public class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/resources/**",
+                .antMatchers(
+//                        "/app/**",
+                        "/resources/**",
                         "/static/**",
                         "/css/**",
                         "/js/**",

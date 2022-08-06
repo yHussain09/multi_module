@@ -1,4 +1,3 @@
-/*
 package com.example.security.config;
 
 import com.example.security.auth.utils.JwtUtils;
@@ -6,6 +5,7 @@ import com.example.security.domain.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -17,21 +17,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.example.security.config.RestApiSecurityConfig.passwordEncoder;
+
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@Order(2)
+public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     UserService userService;
 
-    @Autowired
-    JwtUtils jwtUtils;
+//    @Autowired
+//    JwtUtils jwtUtils;
 
-    @Bean
+    /*@Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+    }*/
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -47,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 
-    @Override
+    /*@Override
     protected void configure(HttpSecurity http) throws Exception {
         // ignore GET and POST requests for /login url from spring security.
         http
@@ -79,6 +82,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // session management.
                 .sessionManagement().maximumSessions(1).expiredUrl("/login?expired=true");
+    }*/
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // ignore GET and POST requests for /login url from spring security.
+        http.authorizeRequests().antMatchers("/app/login").permitAll();
+        http.authorizeRequests().antMatchers("/app/register").permitAll();
+        http.authorizeRequests().antMatchers("/app/user/register").permitAll();
+        http.authorizeRequests().antMatchers("/app/home").permitAll();
+        http.mvcMatcher("/app/**").authorizeRequests().anyRequest().authenticated();
+                // custom login form.
+        http.formLogin().loginPage("/app/login")
+//                .loginProcessingUrl("")
+                .defaultSuccessUrl("/app/")
+                .failureUrl("/app/login?error=true");
+
+                // setting logout url.
+                http.logout()
+                .logoutUrl("/app/logout")
+                .logoutSuccessUrl("/app/login")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID");
+
+                // session management.
+                http.sessionManagement().maximumSessions(1).expiredUrl("/app/login?expired=true");
     }
 
     @Override
@@ -95,4 +123,3 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/icon/**");
     }
 }
-*/
