@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Slf4j
-@Component
+//@Slf4j
+//@Component
 //@ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
-public class JwtAccessDeniedHandler implements AccessDeniedHandler {
+/*public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
 //    protected static final Logger LOGGER = LoggerFactory.getLogger(JwtAccessDeniedHandler.class);
 
@@ -44,4 +44,4 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
 
     }
-}
+}*/

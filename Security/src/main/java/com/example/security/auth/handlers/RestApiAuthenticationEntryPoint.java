@@ -18,14 +18,16 @@ import java.io.OutputStream;
 import java.time.LocalDateTime;
 
 //@Component
-@ControllerAdvice
+//@ControllerAdvice
+/*
 public class RestApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         // 401
 //        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
-        /*OutputStream out = response.getOutputStream();
+        */
+/*OutputStream out = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.writeValue(out,
@@ -37,7 +39,8 @@ public class RestApiAuthenticationEntryPoint implements AuthenticationEntryPoint
                         .path(request.getServletPath())
                         .build()
         );
-        out.flush();*/
+        out.flush();*//*
+
     }
 
     @ExceptionHandler (value = {AccessDeniedException.class})
@@ -61,3 +64,4 @@ public class RestApiAuthenticationEntryPoint implements AuthenticationEntryPoint
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error : " + exception.getMessage());
     }
 }
+*/
