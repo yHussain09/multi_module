@@ -2,7 +2,7 @@ package com.example.security.config;
 
 import com.example.security.auth.filters.RestApiRequestFilter;
 import com.example.security.auth.filters.RestApiAuthenticationFilter;
-import com.example.security.auth.handlers.RestApiAuthenticationEntryPoint;
+//import com.example.security.auth.handlers.RestApiAuthenticationEntryPoint;
 import com.example.security.auth.utils.JwtUtils;
 import com.example.security.domain.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
 //            http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 //            http.authorizeRequests().anyRequest().permitAll();
 //        http.authorizeRequests().antMatchers("/api/login/**").permitAll();
-        http.exceptionHandling().authenticationEntryPoint(new RestApiAuthenticationEntryPoint());
+//        http.exceptionHandling().authenticationEntryPoint(new RestApiAuthenticationEntryPoint());
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(new RestApiAuthenticationFilter(authenticationManager(), jwtUtils));
         http.addFilterBefore(new RestApiRequestFilter(jwtUtils), UsernamePasswordAuthenticationFilter.class);
