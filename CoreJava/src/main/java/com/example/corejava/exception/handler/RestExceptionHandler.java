@@ -13,7 +13,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@Slf4j
+/*@Slf4j
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 //    protected static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
@@ -26,4 +26,4 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-}
+}*/
