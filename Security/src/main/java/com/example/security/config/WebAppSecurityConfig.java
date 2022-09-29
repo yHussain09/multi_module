@@ -1,12 +1,10 @@
 package com.example.security.config;
 
-import com.example.security.auth.utils.JwtUtils;
 import com.example.security.domain.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,8 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static com.example.security.config.RestApiSecurityConfig.passwordEncoder;
 
@@ -28,14 +25,6 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserService userService;
 
-//    @Autowired
-//    JwtUtils jwtUtils;
-
-    /*@Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }*/
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -44,10 +33,9 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
         return authenticationProvider;
     }
 
-
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider());
     }
 
     /*@Override
@@ -86,27 +74,29 @@ public class WebAppSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // ignore GET and POST requests for /login url from spring security.
         http.authorizeRequests().antMatchers("/app/login").permitAll();
         http.authorizeRequests().antMatchers("/app/register").permitAll();
-        http.authorizeRequests().antMatchers("/app/user/register").permitAll();
-        http.authorizeRequests().antMatchers("/app/home").permitAll();
+//        http.authorizeRequests().antMatchers("/app/user/register").permitAll();
+//        http.authorizeRequests().antMatchers("/app/home").permitAll();
         http.mvcMatcher("/app/**").authorizeRequests().anyRequest().authenticated();
-                // custom login form.
+        // custom login form.
         http.formLogin().loginPage("/app/login")
 //                .loginProcessingUrl("")
-                .defaultSuccessUrl("/app/")
+                .defaultSuccessUrl("/app/home")
                 .failureUrl("/app/login?error=true");
 
-                // setting logout url.
-                http.logout()
-                .logoutUrl("/app/logout")
-                .logoutSuccessUrl("/app/login")
+        // setting logout url.
+        http.logout()
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID");
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/app/logout"))
+//                .logoutUrl("/app/logout")
+                .logoutSuccessUrl("/app/login?logout")
+                .permitAll();
 
-                // session management.
-                http.sessionManagement().maximumSessions(1).expiredUrl("/app/login?expired=true");
+        // session management.
+        http.sessionManagement().maximumSessions(1).expiredUrl("/app/login?expired=true");
     }
 
     @Override

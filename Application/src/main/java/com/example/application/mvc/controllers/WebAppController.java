@@ -6,10 +6,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(value = "/app")
-public class WebAppController //implements MvcControllerBase
-{
+public class WebAppController {
     @GetMapping(value = "/home")
-    public String abc() {
-        return "abc";
+    public String home() {
+        return "home";
+    }
+
+    @GetMapping(value = "/dashboard")
+    public String dashboard() {
+        return "dashboard";
     }
 }

@@ -14,11 +14,10 @@ public class AuditorAwareImpl implements AuditorAware<String> {
     public Optional<String> getCurrentAuditor() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         String auditor = "";
-        if(securityContext.getAuthentication() != null) {
+        if (securityContext.getAuthentication() != null) {
             auditor = securityContext.getAuthentication().getName();
             log.debug("Auditor: {} found from Spring Security Context.", auditor);
-        }
-        else {
+        } else {
             log.debug("Spring Security Context not found.");
         }
         return Optional.of(auditor);

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class PermissionService extends ServiceBase<Permission,Long> {
+public class PermissionService extends ServiceBase<Permission, Long> {
     public PermissionService(PermissionRepository repository) {
         super(repository);
     }

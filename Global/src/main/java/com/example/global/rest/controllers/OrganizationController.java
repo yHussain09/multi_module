@@ -1,7 +1,7 @@
-package com.example.btkmall.rest.controllers;
+package com.example.global.rest.controllers;
 
-import com.example.btkmall.domain.entities.Organization;
-import com.example.btkmall.domain.services.OrganizationService;
+import com.example.global.domain.entities.Organization;
+import com.example.global.domain.services.OrganizationService;
 import com.example.corejava.rest.controllers.RestControllerBase;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

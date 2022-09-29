@@ -26,7 +26,7 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 //@ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
-public class UserService extends ServiceBase<User,Long> implements UserDetailsService {
+public class UserService extends ServiceBase<User, Long> implements UserDetailsService {
 
 //    private final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 

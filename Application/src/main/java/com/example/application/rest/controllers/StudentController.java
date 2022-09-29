@@ -27,6 +27,7 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 public class StudentController //extends RestControllerBase<Student, Long>
 {
     private final StudentService studentService;
+
     public StudentController(StudentService service) {
 //        super(service);
         this.studentService = service;
@@ -39,13 +40,13 @@ public class StudentController //extends RestControllerBase<Student, Long>
 
         return ResponseEntity.ok(
                 Response.builder()
-                .timeStamp(LocalDateTime.now())
+                        .timeStamp(LocalDateTime.now())
 //                .data(Map.of("students", this.studentService.getAllStudents(30)))
-                .data(map)
-                .message("Student's list retrieved.")
-                .status(HttpStatus.OK)
-                .statusCode(HttpStatus.OK.value())
-                .build()
+                        .data(map)
+                        .message("Student's list retrieved.")
+                        .status(HttpStatus.OK)
+                        .statusCode(HttpStatus.OK.value())
+                        .build()
         );
     }
 
@@ -88,7 +89,7 @@ public class StudentController //extends RestControllerBase<Student, Long>
                 Response.builder()
                         .timeStamp(LocalDateTime.now())
 //                        .data(Map.of("student", this.studentService.deleteById(id)))
-                        .message(String.format("Student: %s deleted",id.toString()))
+                        .message(String.format("Student: %s deleted", id.toString()))
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
                         .build()

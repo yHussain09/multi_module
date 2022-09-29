@@ -15,7 +15,8 @@ public class LoggingAspect {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingAspect.class);
 
     @Pointcut("within(com.example.api..*)")
-    private void everythingInMyApplication() {}
+    private void everythingInMyApplication() {
+    }
 
     @Before("com.example.demo.aspect.LoggingAspect.everythingInMyApplication()")
     public void logMethodName(JoinPoint joinPoint) {
@@ -46,7 +47,7 @@ public class LoggingAspect {
      * Advice that logs methods throwing exceptions.
      *
      * @param joinPoint join point for advice
-     * @param e exception
+     * @param e         exception
      */
     @AfterThrowing(pointcut = "applicationPackagePointcut() && springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {

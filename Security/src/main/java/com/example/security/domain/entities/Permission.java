@@ -21,6 +21,12 @@ public class Permission extends EntityBase {
     @JsonBackReference
     private Set<Role> roles;
 
+    public Permission() { }
+
+    public Permission(String permission) {
+        this.permission = permission;
+    }
+
     public Long getId() {
         return id;
     }

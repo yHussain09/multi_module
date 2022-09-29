@@ -28,13 +28,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Component
 public class JwtUtils {
 
-   private final String secretKey;
-//   private final String tokenHeader;
-   private final String tokenPrefix;
-   private final Long accessTokenValidity;
-   private final Long refreshTokenValidity;
-   private final String authEndpoint;
-
+    private final String secretKey;
+    //   private final String tokenHeader;
+    private final String tokenPrefix;
+    private final Long accessTokenValidity;
+    private final Long refreshTokenValidity;
+    private final String authEndpoint;
 
 
     public JwtUtils(
@@ -79,7 +78,7 @@ public class JwtUtils {
      *
      * @return the login of the current user.
      */
-    public   Optional<String> getCurrentUsername() {
+    public Optional<String> getCurrentUsername() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             log.debug("no authentication in security context found");
@@ -100,8 +99,7 @@ public class JwtUtils {
         try {
             JWTVerifier jwtVerifier = JWT.require(this.getAlgorithm()).build();
             return jwtVerifier.verify(authToken);
-        }
-        catch (SignatureVerificationException | TokenExpiredException e) {
+        } catch (SignatureVerificationException | TokenExpiredException e) {
             log.error(e.getMessage());
             return null;
         }
@@ -120,16 +118,15 @@ public class JwtUtils {
     // Reads the JWT from the Authorization header, and then uses JWT to validate the token
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         DecodedJWT decodedJWT = validateToken(token);
-        if(decodedJWT != null) {
+        if (decodedJWT != null) {
             String username = getUsername(decodedJWT);
             String roles = getRoles(decodedJWT);
             String permissions = getPermissions(decodedJWT);
-            if(username != null) {
+            if (username != null) {
                 return getUsernamePasswordAuthenticationTokenFromClaims(username, roles, permissions);
             }
             return null;
-        }
-        else {
+        } else {
             log.error("JWT Validation failed!");
         }
         return null;
@@ -137,12 +134,11 @@ public class JwtUtils {
 
     public String getTokenFromRequest(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if(authorizationHeader != null && authorizationHeader.startsWith(this.tokenPrefix)) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(this.tokenPrefix)) {
             String token = authorizationHeader.substring(this.tokenPrefix.length() + 1);
             log.debug("Get token: {} from Request.", token);
             return token;
-        }
-        else {
+        } else {
             log.debug("Authorization Header not found in the request header.");
             throw new JwtTokenMissingException("Authorization Header not found in the request header.");
         }
@@ -159,19 +155,19 @@ public class JwtUtils {
 
     public String getUsername(DecodedJWT decodedJWT) {
         String username = decodedJWT.getSubject();
-        log.debug("Get Username '{}' from JWT.",username);
+        log.debug("Get Username '{}' from JWT.", username);
         return username;
     }
 
     public String getRoles(DecodedJWT decodedJWT) {
         String roles = decodedJWT.getClaim("roles").asString();
-        log.debug("Get Roles '[{}]' from JWT.",roles);
+        log.debug("Get Roles '[{}]' from JWT.", roles);
         return roles;
     }
 
     public String getPermissions(DecodedJWT decodedJWT) {
         String permissions = decodedJWT.getClaim("permissions").asString();
-        log.debug("Get Permissions '[{}]' from JWT.",permissions);
+        log.debug("Get Permissions '[{}]' from JWT.", permissions);
         return permissions;
     }
 
@@ -185,7 +181,7 @@ public class JwtUtils {
         userDetailsMap.put("roles", Arrays.asList(roles.split(",")));
         userDetailsMap.put("permissions", Arrays.asList(permissions.split(",")));
         authenticationToken.setDetails(userDetailsMap);
-        log.debug("Username Password Authentication Token Generated '[{}]' from JWT Claims.",authenticationToken);
+        log.debug("Username Password Authentication Token Generated '[{}]' from JWT Claims.", authenticationToken);
         return authenticationToken;
     }
 
@@ -208,7 +204,7 @@ public class JwtUtils {
                 .stream()
                 .filter(a -> a.getAuthority().startsWith("ROLE_"))
                 .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
-        log.debug("Getting Roles: [{}] for User '{}'.",roles, ((User) authentication.getPrincipal()).getUsername());
+        log.debug("Getting Roles: [{}] for User '{}'.", roles, ((User) authentication.getPrincipal()).getUsername());
         return roles;
     }
 
@@ -217,7 +213,7 @@ public class JwtUtils {
                 .stream()
                 .filter(a -> !(a.getAuthority().startsWith("ROLE_")))
                 .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
-        log.debug("Getting Permissions: [{}] for User '{}'.",permissions, ((User) authentication.getPrincipal()).getUsername());
+        log.debug("Getting Permissions: [{}] for User '{}'.", permissions, ((User) authentication.getPrincipal()).getUsername());
         return permissions;
     }
 
@@ -256,6 +252,7 @@ public class JwtUtils {
                 .sign(this.getAlgorithm());
 
     }
+
     public String getRefreshToken(HttpServletRequest request, Authentication authentication) {
         return JWT.create()
                 .withSubject(((User) authentication.getPrincipal()).getUsername())

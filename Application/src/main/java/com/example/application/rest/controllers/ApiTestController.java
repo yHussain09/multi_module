@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiTestController {
 
     @GetMapping("/")
-    public String apiTest(){
+    public String apiTest() {
         return "Api Test Controller is working....";
     }
 }

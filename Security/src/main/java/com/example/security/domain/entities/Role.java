@@ -12,7 +12,7 @@ public class Role extends EntityBase //implements GrantedAuthority
 {
 
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -26,6 +26,13 @@ public class Role extends EntityBase //implements GrantedAuthority
             inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
     )
     private Set<Permission> permissions = new HashSet<>();
+
+    public Role() {}
+
+    public Role(String role, Set<Permission> permissions) {
+        this.role = role;
+        this.permissions = permissions;
+    }
 
     /*@ManyToMany(mappedBy = "authorities", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference

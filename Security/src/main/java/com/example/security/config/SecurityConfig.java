@@ -1,41 +1,52 @@
 package com.example.security.config;
 
-import com.example.security.auth.filters.RestApiAuthenticationFilter;
-import com.example.security.auth.utils.JwtUtils;
-import com.example.security.domain.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
-import java.util.Arrays;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+//import com.example.security.auth.filters.RestApiAuthenticationFilter;
+//import com.example.security.auth.utils.JwtUtils;
+//import com.example.security.domain.services.UserService;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.core.annotation.Order;
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.AuthenticationProvider;
+//import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+//import org.springframework.security.config.annotation.web.builders.WebSecurity;
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.web.cors.CorsConfiguration;
+//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+//import org.springframework.web.filter.CorsFilter;
+//
+//import java.util.Arrays;
+//
+//import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 
 /**
  * -> Implementation-type 1. Rest APIs should only accessed if auth token is present and valid.
- *
- *    => Limitation of this implementation type is, if web application wants to make AJAX calls to Rest API even though browser has valid session it won't allow to access Web-APIs.
- *    => Here Rest API is only for stateless access.
- *
- *    Description:
- *    -> It has multiple http security configuration(two http security configuration)
- *    -> where http configuration of @order(1) will authorize only "/api/**" rest of url's will not be considered by this configuration. This http configuration will be configured for stateless. And you should configure an implementation of OncePerRequestFilter(Say JwtAuthFilter) and filter order can be before UsernamePasswordAuthenticationFilter or BasicAuthenticationFilter. But your filter should read the header for auth token, validate it and should create Authentication object and set it to SecurityContext without fail.
- *    -> And http configuration of @order(2) will authorize if request is not qualified for first order http configuration. And this configuration does not configures JwtAuthFilter but configures UsernamePasswordAuthenticationFilter(.formLogin() does this for you)
+ * <p>
+ * => Limitation of this implementation type is, if web application wants to make AJAX calls to Rest API even though browser has valid session it won't allow to access Web-APIs.
+ * => Here Rest API is only for stateless access.
+ * <p>
+ * Description:
+ * -> It has multiple http security configuration(two http security configuration)
+ * -> where http configuration of @order(1) will authorize only "/api/**" rest of url's will not be considered by this configuration. This http configuration will be configured for stateless. And you should configure an implementation of OncePerRequestFilter(Say JwtAuthFilter) and filter order can be before UsernamePasswordAuthenticationFilter or BasicAuthenticationFilter. But your filter should read the header for auth token, validate it and should create Authentication object and set it to SecurityContext without fail.
+ * -> And http configuration of @order(2) will authorize if request is not qualified for first order http configuration. And this configuration does not configures JwtAuthFilter but configures UsernamePasswordAuthenticationFilter(.formLogin() does this for you)
+ * <p>
+ * -> Implementation-type 2. Rest APIs can be accessed by auth token as well as session.
+ * <p>
+ * => Here Rest API's can be accessed by any third party applications(cross-origin) by auth token.
+ * => Here Rest API's can be accessed in web application(same-origin) through AJAX calls.
+ * <p>
+ * Description:
+ * -> It has only one http security configuration.
+ * -> where http configuration will authorize all "/**"
+ * -> Here this http configuration is configured for both UsernamePasswordAuthenticationFilter and JwtAuthFilter but JwtAuthFilter should be configured before UsernamePasswordAuthenticationFilter.
+ * -> Trick used here is if there is no Authorization header filter chain just continues to UsernamePasswordAuthenticationFilter and attemptAuthentication method of UsernamePasswordAuthenticationFilter will get invoked if there is no valid auth object in SecurityContext. If JwtAuthFilter validates token and sets auth object to SecurityContext then even if filter chain reaches UsernamePasswordAuthenticationFilter attemptAuthentication method will not be invoked as there is already an authentication object set in SecurityContext.
  */
 
 
@@ -61,7 +72,7 @@ public class SecurityConfig {
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }*//*
 
-    *//*@Order(1)
+ *//*@Order(1)
     @Configuration
 //    @ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
     public static class RestApiSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -76,7 +87,7 @@ public class SecurityConfig {
             return source;
         }*//**//*
 
-        *//**//*@Bean
+ *//**//*@Bean
         public CorsFilter crosFilter() {
             return getCorsFilter();
         }*//**//*
@@ -84,7 +95,7 @@ public class SecurityConfig {
 
     }*//*
 
-    *//*@Order(2)
+ *//*@Order(2)
     @Configuration
 //    @ConditionalOnProperty(name = "app.security.enable", havingValue = "true")
     public static class WebAppLoginFormSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -97,7 +108,7 @@ public class SecurityConfig {
             auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
         }*//**//*
 
-        *//**//*@Override
+ *//**//*@Override
         protected void configure(HttpSecurity http) throws Exception {
             http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 //            http.cors().and().csrf().disable();
@@ -138,7 +149,7 @@ public class SecurityConfig {
                     .sessionManagement().maximumSessions(1).expiredUrl("/login?expired=true");*//**//**//**//*
         }*//**//*
 
-        *//**//*@Override
+ *//**//*@Override
         public void configure(WebSecurity web) throws Exception {
             web
                     .ignoring()
@@ -152,7 +163,7 @@ public class SecurityConfig {
                             "/icon/**");
         }*//**//*
 
-        *//**//*@Bean
+ *//**//*@Bean
         public CorsFilter crosFilter() {
             return getCorsFilter();
         }*//**//*

@@ -54,8 +54,7 @@ public class RestApiRequestFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     log.info("Set Authentication in Spring Security Context.");
 
-                }
-                else {
+                } else {
                     filterChain.doFilter(request, response);
                     return;
                 }

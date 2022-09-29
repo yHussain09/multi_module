@@ -6,7 +6,7 @@ public class ExceptionDTO {
     private Instant timestamp;
     private int status;
     private String error;
-//    private String trace;
+    //    private String trace;
     private String message;
     private String path;
 

@@ -23,7 +23,8 @@ public class EntityBase {
 
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_date", length = 6, nullable = false, updatable = false)    private Date createdDate;
+    @Column(name = "created_date", length = 6, nullable = false, updatable = false)
+    private Date createdDate;
 
     @LastModifiedBy
     @Column(name = "modified_by", length = 50, nullable = false)

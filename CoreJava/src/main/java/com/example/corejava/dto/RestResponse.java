@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @Data
 @SuperBuilder
-@JsonInclude(NON_NULL)
+//@JsonInclude(NON_NULL)
+@JsonInclude(NON_DEFAULT)
 public class RestResponse {
     protected LocalDateTime timeStamp;
     protected int statusCode;
@@ -20,6 +22,6 @@ public class RestResponse {
     protected String reason;
     protected String message;
     protected String developerMessage;
-    protected Map<?,?> data;
+    protected Map<?, ?> data;
     protected String path;
 }

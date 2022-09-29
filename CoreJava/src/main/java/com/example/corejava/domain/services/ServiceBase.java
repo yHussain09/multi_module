@@ -48,7 +48,7 @@ public abstract class ServiceBase<T, ID extends Serializable> {
 //    private Boolean organizationBased;
 //    private Boolean locationBased;
 
-//    @Autowired
+    //    @Autowired
     public ServiceBase(final RepositoryBase<T, ID> repository) {
 //        this.session = session;
         this.repository = repository;
@@ -88,7 +88,7 @@ public abstract class ServiceBase<T, ID extends Serializable> {
 
     public void delete(final T entity) {
         boolean exists = this.repository.exists(Example.of(entity));
-        if(!exists) {
+        if (!exists) {
             throw new EntityNotFoundException("Entity not found!");
         }
         log.info(String.format("ServiceBase --> delete for {%s}", entity.toString()));
@@ -97,7 +97,7 @@ public abstract class ServiceBase<T, ID extends Serializable> {
 
     public void deleteById(final ID id) {
         boolean exists = this.repository.existsById(id);
-        if(!exists) {
+        if (!exists) {
             throw new EntityNotFoundException(String.format("%s not found by ID: {%s}", this.entityClass.getSimpleName(), id));
         }
         log.info(String.format("Service --> deleteById for {%s}", id));

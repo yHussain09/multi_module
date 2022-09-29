@@ -17,6 +17,7 @@ import java.util.Random;
 //@RequiredArgsConstructor
 public class StudentService extends ServiceBase<Student, Long> {
     private final StudentRepository studentRepository;
+
     public StudentService(StudentRepository repository) {
         super(repository);
         this.studentRepository = repository;
@@ -25,7 +26,7 @@ public class StudentService extends ServiceBase<Student, Long> {
     @Override
     public Student save(Student entity) {
         Optional<Student> studentOptional = this.studentRepository.findStudentByEmail(entity.getEmail());
-        if(studentOptional.isPresent()) {
+        if (studentOptional.isPresent()) {
             throw new IllegalStateException("This is email is already taken.");
         }
         return super.save(entity);

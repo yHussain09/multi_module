@@ -2,6 +2,8 @@ package com.example.security.mvc.controllers;
 
 import com.example.security.domain.entities.User;
 import com.example.security.domain.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,20 +12,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/app")
 public class WebAppSecurityController {
+
     private UserService userService;
 
-    public WebAppSecurityController( UserService userService) {
+    public WebAppSecurityController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping(value = "/login")
     public String getLogin(Model model, String error, String logout) {
         if (error != null) {
-            model.addAttribute("error", "Your username and password is invalid.");
+            model.addAttribute("error", "Your username or password is invalid.");
         }
         if (logout != null) {
             model.addAttribute("message", "You have been logged out successfully.");
@@ -64,24 +68,19 @@ public class WebAppSecurityController {
         user.setEnabled("Y");
         user.setActivated("Y");
         user = userService.save(user);
-
-        if(user.getId() != null) {
+        if (user.getId() != null) {
             model.addAttribute("message", "User successfully created!");
             return "redirect:/app/home";
-        }
-        else {
+        } else {
             model.addAttribute("message", "Error!");
             return "register";
         }
     }
 
-    /*@RequestMapping(value = "/error")
-    public String error() {
-        return "error";
-    }*/
-
     @GetMapping(value = "/user")
-    public String getUserView() {
+    public String getUserView(Model model)  {
+        Page<User> users = userService.getAll(Pageable.unpaged(), new User());
+        model.addAttribute("Users", users);
         return "user_view";
     }
 

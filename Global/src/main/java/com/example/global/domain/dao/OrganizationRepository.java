@@ -1,6 +1,6 @@
-package com.example.btkmall.domain.dao;
+package com.example.global.domain.dao;
 
-import com.example.btkmall.domain.entities.Organization;
+import com.example.global.domain.entities.Organization;
 import com.example.corejava.domain.dao.RepositoryBase;
 import org.springframework.stereotype.Repository;
 

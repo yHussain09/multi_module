@@ -1,6 +1,8 @@
 dependencies {
     api project(':Security')
     api project(':btkmall')
+    api project(':Inventory')
+    api project(':Global')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-devtools'

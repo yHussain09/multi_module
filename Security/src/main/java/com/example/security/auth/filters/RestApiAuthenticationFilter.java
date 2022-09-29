@@ -51,18 +51,17 @@ public class RestApiAuthenticationFilter extends UsernamePasswordAuthenticationF
                     new UsernamePasswordAuthenticationToken(userLoginDto.getUsername(),
                             userLoginDto.getPassword(),
                             new ArrayList<>());
-            log.info("Attempt Authentication for User '{}'.",userLoginDto.getUsername());
+            log.info("Attempt Authentication for User '{}'.", userLoginDto.getUsername());
             return authenticationManager.authenticate(authenticationToken);
-        }
-        catch(IOException | AuthenticationException e) {
-            log.error("Authentication Failed!: '{}'.",e.getLocalizedMessage());
+        } catch (IOException | AuthenticationException e) {
+            log.error("Authentication Failed!: '{}'.", e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        log.info("Authentication Successful! for User '{}'.",((User)authentication.getPrincipal()).getUsername());
+        log.info("Authentication Successful! for User '{}'.", ((User) authentication.getPrincipal()).getUsername());
 //        response.addHeader("Authorization","Bearer " + token);
         response.addHeader(AUTHORIZATION, jwtUtils.getTokenPrefix() + " " + jwtUtils.getAccessToken(request, authentication));
         Map<String, Object> responseMap = new HashMap<>();

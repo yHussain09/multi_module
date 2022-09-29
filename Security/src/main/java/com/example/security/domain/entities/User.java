@@ -21,7 +21,7 @@ public class User extends EntityBase implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username" , length = 50, nullable = false, unique = true)
+    @Column(name = "username", length = 50, nullable = false, unique = true)
     @NotEmpty(message = "Username cannot be empty or null!")
     private String username;
 
@@ -66,6 +66,23 @@ public class User extends EntityBase implements UserDetails, Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Role> roles = new HashSet<>();
 
+    public User() { }
+
+    public User(@NotEmpty(message = "Username cannot be empty or null!") String username, @NotEmpty(message = "Password cannot be empty or null!") String password, String firstName, String lastName, String email, String activated, String phoneNumber, String enabled, Timestamp lastPasswordResetDate, String accountNonExpired, String accountNonLocked, String credentialsNonExpired, Set<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.activated = activated;
+        this.phoneNumber = phoneNumber;
+        this.enabled = enabled;
+        this.lastPasswordResetDate = lastPasswordResetDate;
+        this.accountNonExpired = accountNonExpired;
+        this.accountNonLocked = accountNonLocked;
+        this.credentialsNonExpired = credentialsNonExpired;
+        this.roles = roles;
+    }
 
     public Long getId() {
         return id;
@@ -193,7 +210,7 @@ public class User extends EntityBase implements UserDetails, Serializable {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role role: this.roles) {
+        for (Role role : this.roles) {
 //            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
             authorities.add(new SimpleGrantedAuthority(role.getRole()));
             role.getPermissions().stream()

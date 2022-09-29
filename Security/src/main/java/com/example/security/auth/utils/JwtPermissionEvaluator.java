@@ -16,12 +16,12 @@ public class JwtPermissionEvaluator implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if (authentication != null && permission instanceof String) {
-            log.debug("Validating Access Permission for User '{}' and Permission '{}'.",authentication.getPrincipal().toString(), permission);
-            boolean permissionValidate = validatePermission(authentication ,String.valueOf(permission));
+            log.debug("Validating Access Permission for User '{}' and Permission '{}'.", authentication.getPrincipal().toString(), permission);
+            boolean permissionValidate = validatePermission(authentication, String.valueOf(permission));
             if (permissionValidate) {
-                log.debug("Permission '{}' Granted for User '{}'",permission, authentication.getPrincipal().toString());
+                log.debug("Permission '{}' Granted for User '{}'", permission, authentication.getPrincipal().toString());
             } else {
-                log.debug("Failed to validate Permission '{}' for User '{}'",permission, authentication.getPrincipal().toString());
+                log.debug("Failed to validate Permission '{}' for User '{}'", permission, authentication.getPrincipal().toString());
             }
             return permissionValidate;
         }
